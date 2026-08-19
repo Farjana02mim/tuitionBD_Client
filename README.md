@@ -1,16 +1,52 @@
-# React + Vite
+# 🎓 Tuition Management System - Frontend Client
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Single Page Application (SPA) for the Tuition Management System built with React, Vite, Tailwind CSS, DaisyUI, Framer Motion, and Firebase Authentication.
 
-Currently, two official plugins are available:
+---
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+## 🛠️ Technology Stack
 
-## React Compiler
+- **Framework**: React 18 & Vite
+- **UI & CSS**: Tailwind CSS, DaisyUI
+- **State & Server Queries**: TanStack React Query (`@tanstack/react-query`)
+- **HTTP Client**: Axios with JWT/Firebase Bearer token interceptor
+- **Icons**: Lucide React
+- **Animations**: Framer Motion
+- **Data Visualizations**: Recharts
+- **Authentication**: Firebase Client SDK
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+---
 
-## Expanding the ESLint configuration
+## 📁 Directory Structure
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+```
+client/
+├── src/
+│   ├── components/       # Reusable components (Navbar, Footer, Modals, Loaders)
+│   ├── hooks/            # Custom hooks (useAuth, useRole, useAxiosSecure)
+│   ├── layouts/          # MainLayout & DashboardLayout
+│   ├── pages/            # Public & Protected View Components
+│   │   ├── Dashboard/    # Student, Tutor, Admin dashboards & pages
+│   ├── providers/        # AuthProvider & Context
+│   ├── routes/           # Protected Route guards (PrivateRoute, AdminRoute, etc.)
+│   └── firebase/         # Firebase Client config
+├── .env.example          # Environment variables template
+├── package.json
+└── vite.config.ts
+```
+
+---
+
+## ⚙️ Client Environment Variables
+
+Create `.env` inside `client/`:
+
+```env
+VITE_FIREBASE_API_KEY=your_firebase_api_key
+VITE_FIREBASE_AUTH_DOMAIN=tuition-management.firebaseapp.com
+VITE_FIREBASE_PROJECT_ID=tuition-management
+VITE_FIREBASE_STORAGE_BUCKET=tuition-management.appspot.com
+VITE_FIREBASE_MESSAGING_SENDER_ID=1234567890
+VITE_FIREBASE_APP_ID=1:1234567890:web:abcdef
+VITE_API_URL=http://localhost:3000
+```
