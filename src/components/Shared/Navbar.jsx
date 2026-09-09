@@ -95,7 +95,7 @@ export const Navbar = () => {
         </div>
 
         {/* Logo */}
-        <Link to="/" className="flex items-center gap-2 text-xl font-extrabold tracking-tight text-primary">
+        <Link to="/" className="flex items-center gap-2 sm:text-sm md:text-xl font-extrabold tracking-tight text-primary">
           <div className="p-2 bg-primary/10 rounded-xl text-primary">
             <BookOpen className="w-5 h-5" />
           </div>
