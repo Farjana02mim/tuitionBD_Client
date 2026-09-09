@@ -1,19 +1,28 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { useAuth } from '../hooks/useAuth';
-import axios from 'axios';
-import Swal from 'sweetalert2';
-import { UserPlus, Mail, Lock, User, Phone, BookOpen, GraduationCap } from 'lucide-react';
+import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../hooks/useAuth";
+import axios from "axios";
+import Swal from "sweetalert2";
+import {
+  UserPlus,
+  Mail,
+  Lock,
+  User,
+  Phone,
+  BookOpen,
+  GraduationCap,
+} from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 export const Register = () => {
-  const { createUser, updateUserProfile, signInWithGoogle, setLoading } = useAuth();
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
-  const [role, setRole] = useState('student');
-  const [password, setPassword] = useState('');
+  const { createUser, updateUserProfile, signInWithGoogle, setLoading } =
+    useAuth();
+  const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [phone, setPhone] = useState("");
+  const [role, setRole] = useState("student");
+  const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const navigate = useNavigate();
@@ -22,9 +31,9 @@ export const Register = () => {
     e.preventDefault();
     if (password.length < 6) {
       Swal.fire({
-        icon: 'error',
-        title: 'Weak Password',
-        text: 'Password must be at least 6 characters.',
+        icon: "error",
+        title: "Weak Password",
+        text: "Password must be at least 6 characters.",
       });
       return;
     }
@@ -36,7 +45,7 @@ export const Register = () => {
       const firebaseUser = userCredential.user;
 
       // 2. Update Firebase display name
-      await updateUserProfile(name, '');
+      await updateUserProfile(name, "");
 
       // 3. Obtain token and register into MongoDB with chosen role
       const token = await firebaseUser.getIdToken();
@@ -47,29 +56,29 @@ export const Register = () => {
           email,
           phone,
           role,
-          photoURL: '',
+          photoURL: "",
         },
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
 
       Swal.fire({
-        icon: 'success',
-        title: 'Account Created!',
+        icon: "success",
+        title: "Account Created!",
         text: `Welcome to TuitionDesk as a ${role}.`,
         timer: 1500,
         showConfirmButton: false,
       });
 
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Registration error:', error);
+      console.error("Registration error:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Registration Failed',
+        icon: "error",
+        title: "Registration Failed",
         text: error.message,
       });
     } finally {
@@ -82,17 +91,17 @@ export const Register = () => {
     try {
       await signInWithGoogle();
       Swal.fire({
-        icon: 'success',
-        title: 'Google Sign In Successful',
+        icon: "success",
+        title: "Google Sign In Successful",
         timer: 1500,
         showConfirmButton: false,
       });
-      navigate('/dashboard');
+      navigate("/dashboard");
     } catch (error) {
-      console.error('Google Sign In error:', error);
+      console.error("Google Sign In error:", error);
       Swal.fire({
-        icon: 'error',
-        title: 'Google Sign In Failed',
+        icon: "error",
+        title: "Google Sign In Failed",
         text: error.message,
       });
     } finally {
@@ -107,24 +116,30 @@ export const Register = () => {
           <div className="inline-flex p-3 rounded-2xl bg-primary/10 text-primary mb-2">
             <UserPlus className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-black text-base-content">Create an Account</h2>
-          <p className="text-sm text-base-content/60">Join TuitionDesk as a student or certified tutor</p>
+          <h2 className="text-2xl font-black text-base-content">
+            Create an Account
+          </h2>
+          <p className="text-sm text-base-content/60">
+            Join TuitionDesk as a student or certified tutor
+          </p>
         </div>
 
         <form onSubmit={handleRegister} className="space-y-4">
           {/* Role selection tabs */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold text-xs">Select Your Role</span>
+              <span className="label-text font-semibold text-xs">
+                Select Your Role
+              </span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
-                onClick={() => setRole('student')}
+                onClick={() => setRole("student")}
                 className={`p-3 rounded-2xl border flex items-center justify-center gap-2 font-bold text-sm transition-all ${
-                  role === 'student'
-                    ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                    : 'border-base-200 hover:bg-base-200 text-base-content/70'
+                  role === "student"
+                    ? "border-primary bg-primary/10 text-primary shadow-sm"
+                    : "border-base-200 hover:bg-base-200 text-base-content/70"
                 }`}
               >
                 <BookOpen className="w-4 h-4" />
@@ -132,11 +147,11 @@ export const Register = () => {
               </button>
               <button
                 type="button"
-                onClick={() => setRole('tutor')}
+                onClick={() => setRole("tutor")}
                 className={`p-3 rounded-2xl border flex items-center justify-center gap-2 font-bold text-sm transition-all ${
-                  role === 'tutor'
-                    ? 'border-primary bg-primary/10 text-primary shadow-sm'
-                    : 'border-base-200 hover:bg-base-200 text-base-content/70'
+                  role === "tutor"
+                    ? "border-primary bg-primary/10 text-primary shadow-sm"
+                    : "border-base-200 hover:bg-base-200 text-base-content/70"
                 }`}
               >
                 <GraduationCap className="w-4 h-4" />
@@ -147,7 +162,9 @@ export const Register = () => {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold text-xs">Full Name</span>
+              <span className="label-text font-semibold text-xs">
+                Full Name
+              </span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40">
@@ -186,7 +203,9 @@ export const Register = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-semibold text-xs">Phone Number</span>
+                <span className="label-text font-semibold text-xs">
+                  Phone Number
+                </span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40">
@@ -227,41 +246,35 @@ export const Register = () => {
             disabled={isSubmitting}
             className="btn btn-primary btn-block rounded-xl gap-2 mt-4 font-bold shadow-md shadow-primary/20"
           >
-            {isSubmitting ? <span className="loading loading-spinner loading-sm"></span> : <UserPlus className="w-4 h-4" />}
+            {isSubmitting ? (
+              <span className="loading loading-spinner loading-sm"></span>
+            ) : (
+              <UserPlus className="w-4 h-4" />
+            )}
             <span>Create Account</span>
           </button>
         </form>
 
-        <div className="divider text-xs text-base-content/40 my-6">OR REGISTER WITH</div>
+        <div className="divider text-xs text-base-content/40 my-6">
+          OR REGISTER WITH
+        </div>
 
+        {/* GOOGLE */}
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="btn btn-outline btn-block rounded-xl gap-3 font-semibold text-sm hover:bg-base-200"
+          className="w-full border border-gray-300 py-4 rounded-full flex items-center justify-center gap-3 hover:bg-gray-100 transition"
         >
-          <svg className="w-4 h-4" viewBox="0 0 24 24">
-            <path
-              fill="currentColor"
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-            />
-            <path
-              fill="currentColor"
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.63z"
-            />
-            <path
-              fill="currentColor"
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"
-            />
-          </svg>
-          <span>Continue with Google</span>
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            alt="google"
+            className="w-5"
+          />
+          Continue with Google
         </button>
 
         <p className="text-center text-xs text-base-content/60 mt-6">
-          Already have an account?{' '}
+          Already have an account?{" "}
           <Link to="/login" className="font-bold text-primary hover:underline">
             Sign In
           </Link>
