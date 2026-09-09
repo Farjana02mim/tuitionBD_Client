@@ -7,16 +7,11 @@ import {
   GraduationCap,
   ShieldCheck,
   Zap,
-  CheckCircle,
   ArrowRight,
   Sparkles,
   MapPin,
   Calendar,
-  DollarSign,
-  UserCheck,
   CreditCard,
-  Award,
-  BookOpen,
   Star,
 } from 'lucide-react';
 import { LoadingSpinner } from '../components/Shared/LoadingSpinner';
@@ -90,11 +85,13 @@ export const Home = () => {
 
   return (
     <div className="space-y-24 pb-20">
-      {/* 1. HERO SECTION WITH MEANINGFUL FRAMER MOTION ANIMATIONS */}
+      {/* ============================================================ */}
+      {/* 1. HERO SECTION WITH FRAMER MOTION ANIMATIONS 1 & 2 */}
+      {/* ============================================================ */}
       <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 via-base-100 to-base-100 py-20 px-4 md:px-8 border-b border-base-200">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
           
-          {/* Framer Motion Animation 1: Left content fade-up with spring */}
+          {/* ANIMATION 1: Left Hero Content Fade-Up Entrance */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -141,12 +138,13 @@ export const Home = () => {
             </div>
           </motion.div>
 
-          {/* Framer Motion Animation 2: Right floating interactive card with entry scale */}
+          {/* ANIMATION 2: Right Interactive Card Scale-in & Hover Elevation */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
+            whileHover={{ y: -6, transition: { duration: 0.25 } }}
             transition={{ duration: 0.7, delay: 0.2, ease: 'easeOut' }}
-            className="lg:col-span-5 relative flex items-center justify-center"
+            className="lg:col-span-5 relative flex items-center justify-center cursor-pointer"
           >
             <div className="w-full max-w-md bg-base-100 rounded-3xl p-6 shadow-2xl border border-base-200 space-y-5">
               <div className="flex items-center justify-between pb-3 border-b border-base-200">
@@ -198,9 +196,17 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* 2. HOW THE PLATFORM WORKS (3 VISUAL STEPS) */}
+      {/* ============================================================ */}
+      {/* 2. HOW THE PLATFORM WORKS (ANIMATION 3: Staggered Cards) */}
+      {/* ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 space-y-12">
-        <div className="text-center space-y-3 max-w-2xl mx-auto">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.5 }}
+          className="text-center space-y-3 max-w-2xl mx-auto"
+        >
           <div className="badge badge-primary badge-outline text-xs font-bold uppercase tracking-wider">
             Simple 3-Step Process
           </div>
@@ -208,11 +214,18 @@ export const Home = () => {
           <p className="text-xs text-base-content/60">
             A frictionless workflow ensuring transparent hiring, verified educators, and secure milestone payments.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* Step 1 */}
-          <div className="card bg-base-100 border border-base-200 p-8 rounded-3xl space-y-4 text-center hover:border-primary/50 transition-all shadow-sm">
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -6 }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="card bg-base-100 border border-base-200 p-8 rounded-3xl space-y-4 text-center hover:border-primary/50 transition-colors shadow-sm cursor-pointer"
+          >
             <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto text-xl font-black">
               1
             </div>
@@ -220,10 +233,17 @@ export const Home = () => {
             <p className="text-xs text-base-content/70 leading-relaxed">
               Students and parents post their subject, class grade, monthly budget, preferred days, and target goals in under 2 minutes.
             </p>
-          </div>
+          </motion.div>
 
           {/* Step 2 */}
-          <div className="card bg-base-100 border border-base-200 p-8 rounded-3xl space-y-4 text-center hover:border-primary/50 transition-all shadow-sm">
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -6 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="card bg-base-100 border border-base-200 p-8 rounded-3xl space-y-4 text-center hover:border-primary/50 transition-colors shadow-sm cursor-pointer"
+          >
             <div className="w-14 h-14 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center mx-auto text-xl font-black">
               2
             </div>
@@ -231,10 +251,17 @@ export const Home = () => {
             <p className="text-xs text-base-content/70 leading-relaxed">
               Certified tutors apply with their university degrees, teaching records, and salary proposals. Filter and choose the best candidate.
             </p>
-          </div>
+          </motion.div>
 
           {/* Step 3 */}
-          <div className="card bg-base-100 border border-base-200 p-8 rounded-3xl space-y-4 text-center hover:border-primary/50 transition-all shadow-sm">
+          <motion.div
+            initial={{ opacity: 0, y: 25 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            whileHover={{ y: -6 }}
+            transition={{ duration: 0.4, delay: 0.3 }}
+            className="card bg-base-100 border border-base-200 p-8 rounded-3xl space-y-4 text-center hover:border-primary/50 transition-colors shadow-sm cursor-pointer"
+          >
             <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mx-auto text-xl font-black">
               3
             </div>
@@ -242,11 +269,13 @@ export const Home = () => {
             <p className="text-xs text-base-content/70 leading-relaxed">
               Confirm the tutor hire via encrypted Stripe payment. Funds are securely locked in escrow until teaching sessions are active.
             </p>
-          </div>
+          </motion.div>
         </div>
       </section>
 
-      {/* 3. DYNAMIC LATEST TUITION POSTS */}
+      {/* ============================================================ */}
+      {/* 3. DYNAMIC LATEST TUITION POSTS (ANIMATION 4: Scroll Fade-In Cards) */}
+      {/* ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-4">
           <div>
@@ -269,10 +298,15 @@ export const Home = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {latestTuitions.map((t) => (
-              <div
+            {latestTuitions.map((t, index) => (
+              <motion.div
                 key={t._id}
-                className="card bg-base-100 border border-base-200 p-6 rounded-3xl space-y-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -6 }}
+                transition={{ duration: 0.35, delay: index * 0.08 }}
+                className="card bg-base-100 border border-base-200 p-6 rounded-3xl space-y-4 shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="flex items-start justify-between gap-2">
@@ -318,13 +352,15 @@ export const Home = () => {
                     <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
       </section>
 
-      {/* 4. DYNAMIC LATEST VERIFIED TUTORS */}
+      {/* ============================================================ */}
+      {/* 4. DYNAMIC LATEST VERIFIED TUTORS (ANIMATION 5: Scale-in on scroll) */}
+      {/* ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-4">
           <div>
@@ -343,10 +379,15 @@ export const Home = () => {
           <LoadingSpinner text="Fetching verified tutors..." />
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {latestTutors.map((tutor) => (
-              <div
+            {latestTutors.map((tutor, index) => (
+              <motion.div
                 key={tutor._id}
-                className="card bg-base-100 border border-base-200 rounded-3xl p-6 text-center space-y-4 shadow-sm hover:shadow-md transition-all flex flex-col justify-between"
+                initial={{ opacity: 0, scale: 0.95 }}
+                whileInView={{ opacity: 1, scale: 1 }}
+                viewport={{ once: true }}
+                whileHover={{ y: -6 }}
+                transition={{ duration: 0.35, delay: index * 0.08 }}
+                className="card bg-base-100 border border-base-200 rounded-3xl p-6 text-center space-y-4 shadow-sm hover:shadow-lg transition-shadow flex flex-col justify-between"
               >
                 <div className="space-y-3">
                   <div className="avatar mx-auto">
@@ -394,24 +435,39 @@ export const Home = () => {
                     View Profile
                   </Link>
                 </div>
-              </div>
+              </motion.div>
             ))}
           </div>
         )}
       </section>
 
+      {/* ============================================================ */}
       {/* 5. WHY CHOOSE US SECTION */}
+      {/* ============================================================ */}
       <section className="bg-base-200/50 py-16 px-4 md:px-8 border-y border-base-200">
         <div className="max-w-7xl mx-auto space-y-12">
-          <div className="text-center space-y-3 max-w-2xl mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.5 }}
+            className="text-center space-y-3 max-w-2xl mx-auto"
+          >
             <h2 className="text-3xl font-extrabold text-base-content tracking-tight">Why Choose TuitionDesk?</h2>
             <p className="text-xs text-base-content/60">
               Built on academic integrity, security, and proven tutoring results.
             </p>
-          </div>
+          </motion.div>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="card bg-base-100 border border-base-200 p-6 rounded-3xl shadow-sm space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.4, delay: 0.1 }}
+              className="card bg-base-100 border border-base-200 p-6 rounded-3xl shadow-sm space-y-3 hover:border-primary/40 transition-colors"
+            >
               <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center">
                 <ShieldCheck className="w-6 h-6" />
               </div>
@@ -419,9 +475,16 @@ export const Home = () => {
               <p className="text-xs text-base-content/70 leading-relaxed">
                 Tutor educational degrees, certifications, and teaching identities are manually reviewed before profile approval.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="card bg-base-100 border border-base-200 p-6 rounded-3xl shadow-sm space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.4, delay: 0.2 }}
+              className="card bg-base-100 border border-base-200 p-6 rounded-3xl shadow-sm space-y-3 hover:border-secondary/40 transition-colors"
+            >
               <div className="w-12 h-12 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center">
                 <CreditCard className="w-6 h-6" />
               </div>
@@ -429,9 +492,16 @@ export const Home = () => {
               <p className="text-xs text-base-content/70 leading-relaxed">
                 Students only pay when a tutor is hired. Funds are safeguarded until schedule and lesson milestones commence.
               </p>
-            </div>
+            </motion.div>
 
-            <div className="card bg-base-100 border border-base-200 p-6 rounded-3xl shadow-sm space-y-3">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              whileHover={{ y: -4 }}
+              transition={{ duration: 0.4, delay: 0.3 }}
+              className="card bg-base-100 border border-base-200 p-6 rounded-3xl shadow-sm space-y-3 hover:border-accent/40 transition-colors"
+            >
               <div className="w-12 h-12 rounded-2xl bg-accent/10 text-accent flex items-center justify-center">
                 <Zap className="w-6 h-6" />
               </div>
@@ -439,7 +509,7 @@ export const Home = () => {
               <p className="text-xs text-base-content/70 leading-relaxed">
                 Custom dashboard workspaces for students, tutors, and admins to manage applications, track revenue, and monitor progress.
               </p>
-            </div>
+            </motion.div>
           </div>
         </div>
       </section>
