@@ -3,21 +3,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../hooks/useAuth";
 import axios from "axios";
 import Swal from "sweetalert2";
-import {
-  UserPlus,
-  Mail,
-  Lock,
-  User,
-  Phone,
-  BookOpen,
-  GraduationCap,
-} from "lucide-react";
+import { UserPlus, Mail, Lock, User, Phone, BookOpen, GraduationCap } from "lucide-react";
 
-const API_URL = import.meta.env.VITE_API_URL || "http://localhost:3000";
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export const Register = () => {
-  const { createUser, updateUserProfile, signInWithGoogle, setLoading } =
-    useAuth();
+  const { createUser, updateUserProfile, signInWithGoogle, setLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
@@ -40,30 +31,26 @@ export const Register = () => {
 
     setIsSubmitting(true);
     try {
-      // 1. Create Firebase Auth user
-      const userCredential = await createUser(email, password);
+      // 1. Firebase Auth user তৈরি (নাম ও রোল সহ)
+      const userCredential = await createUser(email, password, name, role, phone);
       const firebaseUser = userCredential.user;
 
-      // 2. Update Firebase display name
-      await updateUserProfile(name, "");
+      // 2. Profile নাম আপডেট
+      if (name) {
+        await updateUserProfile(name, "");
+      }
 
-      // 3. Obtain token and register into MongoDB with chosen role
-      const token = await firebaseUser.getIdToken();
-      await axios.post(
-        `${API_URL}/users`,
-        {
-          name,
-          email,
-          phone,
-          role,
-          photoURL: "",
-        },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
+      // 3. MongoDB-তে ইউজার তথ্য সিঙ্ক
+      try {
+        const token = await firebaseUser.getIdToken();
+        await axios.post(
+          `${API_URL}/users`,
+          { name, email, phone, role, photoURL: "" },
+          { headers: { Authorization: `Bearer ${token}` } }
+        );
+      } catch (dbErr) {
+        console.warn("MongoDB sync notice:", dbErr.message);
+      }
 
       Swal.fire({
         icon: "success",
@@ -76,10 +63,26 @@ export const Register = () => {
       navigate("/dashboard");
     } catch (error) {
       console.error("Registration error:", error);
+
+      if (error.code === "auth/email-already-in-use") {
+        Swal.fire({
+          icon: "warning",
+          title: "Email Already In Use",
+          text: "এই ইমেইলটি দিয়ে ইতিমধ্যে অ্যাকাউন্ট খোলা আছে। দয়া করে লগইন করুন।",
+          showCancelButton: true,
+          confirmButtonText: "Go to Login",
+          cancelButtonText: "Cancel",
+          confirmButtonColor: "#2563eb",
+        }).then((res) => {
+          if (res.isConfirmed) navigate("/login");
+        });
+        return;
+      }
+
       Swal.fire({
         icon: "error",
         title: "Registration Failed",
-        text: error.message,
+        text: error.message || "Registration could not be completed.",
       });
     } finally {
       setIsSubmitting(false);
@@ -98,7 +101,6 @@ export const Register = () => {
       });
       navigate("/dashboard");
     } catch (error) {
-      console.error("Google Sign In error:", error);
       Swal.fire({
         icon: "error",
         title: "Google Sign In Failed",
@@ -116,21 +118,14 @@ export const Register = () => {
           <div className="inline-flex p-3 rounded-2xl bg-primary/10 text-primary mb-2">
             <UserPlus className="w-8 h-8" />
           </div>
-          <h2 className="text-2xl font-black text-base-content">
-            Create an Account
-          </h2>
-          <p className="text-sm text-base-content/60">
-            Join TuitionDesk as a student or certified tutor
-          </p>
+          <h2 className="text-2xl font-black text-base-content">Create an Account</h2>
+          <p className="text-sm text-base-content/60">Join TuitionDesk as a student or certified tutor</p>
         </div>
 
         <form onSubmit={handleRegister} className="space-y-4">
-          {/* Role selection tabs */}
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold text-xs">
-                Select Your Role
-              </span>
+              <span className="label-text font-semibold text-xs">Select Your Role</span>
             </label>
             <div className="grid grid-cols-2 gap-3">
               <button
@@ -162,9 +157,7 @@ export const Register = () => {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-semibold text-xs">
-                Full Name
-              </span>
+              <span className="label-text font-semibold text-xs">Full Name</span>
             </label>
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40">
@@ -203,9 +196,7 @@ export const Register = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-semibold text-xs">
-                  Phone Number
-                </span>
+                <span className="label-text font-semibold text-xs">Phone Number</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40">
@@ -255,21 +246,14 @@ export const Register = () => {
           </button>
         </form>
 
-        <div className="divider text-xs text-base-content/40 my-6">
-          OR REGISTER WITH
-        </div>
+        <div className="divider text-xs text-base-content/40 my-6">OR REGISTER WITH</div>
 
-        {/* GOOGLE */}
         <button
           type="button"
           onClick={handleGoogleSignIn}
-          className="w-full border border-gray-300 py-4 rounded-full flex items-center justify-center gap-3 hover:bg-gray-100 transition"
+          className="w-full border border-gray-300 py-3 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-100 transition text-sm font-semibold"
         >
-          <img
-            src="https://www.svgrepo.com/show/475656/google-color.svg"
-            alt="google"
-            className="w-5"
-          />
+          <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="google" className="w-5 h-5" />
           Continue with Google
         </button>
 
@@ -283,3 +267,4 @@ export const Register = () => {
     </div>
   );
 };
+export default Register;

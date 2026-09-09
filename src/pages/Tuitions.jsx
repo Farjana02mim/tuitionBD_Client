@@ -1,7 +1,7 @@
-import { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import axios from 'axios';
-import { Link } from 'react-router-dom';
+import { useState } from "react";
+import { useQuery } from "@tanstack/react-query";
+import axios from "axios";
+import { Link } from "react-router-dom";
 import {
   Search,
   MapPin,
@@ -15,47 +15,47 @@ import {
   ChevronLeft,
   ChevronRight,
   BookOpen,
-} from 'lucide-react';
-import { LoadingSpinner } from '../components/Shared/LoadingSpinner';
+} from "lucide-react";
+import { LoadingSpinner } from "../components/Shared/LoadingSpinner";
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 const SUBJECT_OPTIONS = [
-  'All Subjects',
-  'Mathematics',
-  'Physics',
-  'Chemistry',
-  'Biology',
-  'English',
-  'Computer Science',
-  'Bangla',
-  'Accounting',
-  'Economics',
-  'Higher Math',
+  "All Subjects",
+  "Mathematics",
+  "Physics",
+  "Chemistry",
+  "Biology",
+  "English",
+  "Computer Science",
+  "Bangla",
+  "Accounting",
+  "Economics",
+  "Higher Math",
 ];
 
 const CLASS_OPTIONS = [
-  'All Classes',
-  'Class 5',
-  'Class 6',
-  'Class 7',
-  'Class 8',
-  'Class 9',
-  'Class 10 (SSC)',
-  'Class 11 (HSC)',
-  'Class 12 (HSC)',
-  'O Level',
-  'A Level',
-  'University / College',
+  "All Classes",
+  "Class 5",
+  "Class 6",
+  "Class 7",
+  "Class 8",
+  "Class 9",
+  "Class 10 (SSC)",
+  "Class 11 (HSC)",
+  "Class 12 (HSC)",
+  "O Level",
+  "A Level",
+  "University / College",
 ];
 
 export const Tuitions = () => {
   // 1. Search, Filter & Sort States
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedSubject, setSelectedSubject] = useState('');
-  const [selectedClass, setSelectedClass] = useState('');
-  const [locationTerm, setLocationTerm] = useState('');
-  const [sortOption, setSortOption] = useState('newest'); // 'budget_asc' | 'budget_desc' | 'newest' | 'oldest'
+  const [searchTerm, setSearchTerm] = useState("");
+  const [selectedSubject, setSelectedSubject] = useState("");
+  const [selectedClass, setSelectedClass] = useState("");
+  const [locationTerm, setLocationTerm] = useState("");
+  const [sortOption, setSortOption] = useState("newest"); // 'budget_asc' | 'budget_desc' | 'newest' | 'oldest'
 
   // 2. Pagination State
   const [page, setPage] = useState(1);
@@ -64,15 +64,15 @@ export const Tuitions = () => {
   // Derive sort parameters for backend
   const getSortParams = (opt) => {
     switch (opt) {
-      case 'budget_asc':
-        return { sort: 'budget_asc', sortBy: 'budget', sortOrder: 'asc' };
-      case 'budget_desc':
-        return { sort: 'budget_desc', sortBy: 'budget', sortOrder: 'desc' };
-      case 'oldest':
-        return { sort: 'oldest', sortBy: 'createdAt', sortOrder: 'asc' };
-      case 'newest':
+      case "budget_asc":
+        return { sort: "budget_asc", sortBy: "budget", sortOrder: "asc" };
+      case "budget_desc":
+        return { sort: "budget_desc", sortBy: "budget", sortOrder: "desc" };
+      case "oldest":
+        return { sort: "oldest", sortBy: "createdAt", sortOrder: "asc" };
+      case "newest":
       default:
-        return { sort: 'newest', sortBy: 'createdAt', sortOrder: 'desc' };
+        return { sort: "newest", sortBy: "createdAt", sortOrder: "desc" };
     }
   };
 
@@ -81,7 +81,7 @@ export const Tuitions = () => {
   // 3. TanStack Query with Synchronized Query Parameters
   const { data, isLoading, isFetching } = useQuery({
     queryKey: [
-      'tuitionsListing',
+      "tuitionsListing",
       page,
       limit,
       searchTerm,
@@ -99,10 +99,12 @@ export const Tuitions = () => {
         sortOrder,
       });
 
-      if (searchTerm) params.append('search', searchTerm);
-      if (selectedSubject && selectedSubject !== 'All Subjects') params.append('subject', selectedSubject);
-      if (selectedClass && selectedClass !== 'All Classes') params.append('class', selectedClass);
-      if (locationTerm) params.append('location', locationTerm);
+      if (searchTerm) params.append("search", searchTerm);
+      if (selectedSubject && selectedSubject !== "All Subjects")
+        params.append("subject", selectedSubject);
+      if (selectedClass && selectedClass !== "All Classes")
+        params.append("class", selectedClass);
+      if (locationTerm) params.append("location", locationTerm);
 
       const res = await axios.get(`${API_URL}/tuitions?${params.toString()}`);
       return res.data;
@@ -111,24 +113,27 @@ export const Tuitions = () => {
   });
 
   const tuitions = data?.data || [];
-  const totalPages = Math.max(1, data?.totalPages || Math.ceil((data?.total || 0) / limit) || 1);
+  const totalPages = Math.max(
+    1,
+    data?.totalPages || Math.ceil((data?.total || 0) / limit) || 1,
+  );
   const totalCount = data?.total || tuitions.length;
 
   const handleResetFilters = () => {
-    setSearchTerm('');
-    setSelectedSubject('');
-    setSelectedClass('');
-    setLocationTerm('');
-    setSortOption('newest');
+    setSearchTerm("");
+    setSelectedSubject("");
+    setSelectedClass("");
+    setLocationTerm("");
+    setSortOption("newest");
     setPage(1);
   };
 
   const hasActiveFilters =
     Boolean(searchTerm) ||
-    Boolean(selectedSubject && selectedSubject !== 'All Subjects') ||
-    Boolean(selectedClass && selectedClass !== 'All Classes') ||
+    Boolean(selectedSubject && selectedSubject !== "All Subjects") ||
+    Boolean(selectedClass && selectedClass !== "All Classes") ||
     Boolean(locationTerm) ||
-    sortOption !== 'newest';
+    sortOption !== "newest";
 
   // Generate page button numbers array
   const generatePageNumbers = () => {
@@ -155,15 +160,20 @@ export const Tuitions = () => {
           <div className="badge badge-primary badge-outline text-[10px] font-bold uppercase mb-1">
             Tuition Exchange
           </div>
-          <h1 className="text-3xl font-black text-base-content tracking-tight">Available Tuitions</h1>
+          <h1 className="text-3xl font-black text-base-content tracking-tight">
+            Available Tuitions
+          </h1>
           <p className="text-xs text-base-content/60 mt-1">
-            Browse verified academic tuition requirements posted by students and parents.
+            Browse verified academic tuition requirements posted by students and
+            parents.
           </p>
         </div>
 
         <div className="text-xs text-base-content/60 font-medium">
-          Showing <span className="font-bold text-primary">{tuitions.length}</span> of{' '}
-          <span className="font-bold text-base-content">{totalCount}</span> tuition posts
+          Showing{" "}
+          <span className="font-bold text-primary">{tuitions.length}</span> of{" "}
+          <span className="font-bold text-base-content">{totalCount}</span>{" "}
+          tuition posts
         </div>
       </div>
 
@@ -203,7 +213,7 @@ export const Tuitions = () => {
             />
             {searchTerm && (
               <button
-                onClick={() => setSearchTerm('')}
+                onClick={() => setSearchTerm("")}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
               >
                 <X className="w-3.5 h-3.5" />
@@ -226,7 +236,7 @@ export const Tuitions = () => {
             />
             {locationTerm && (
               <button
-                onClick={() => setLocationTerm('')}
+                onClick={() => setLocationTerm("")}
                 className="absolute right-2.5 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content"
               >
                 <X className="w-3.5 h-3.5" />
@@ -244,7 +254,7 @@ export const Tuitions = () => {
             className="select select-bordered select-sm w-full rounded-xl text-xs"
           >
             {SUBJECT_OPTIONS.map((sub) => (
-              <option key={sub} value={sub === 'All Subjects' ? '' : sub}>
+              <option key={sub} value={sub === "All Subjects" ? "" : sub}>
                 {sub}
               </option>
             ))}
@@ -260,7 +270,7 @@ export const Tuitions = () => {
             className="select select-bordered select-sm w-full rounded-xl text-xs"
           >
             {CLASS_OPTIONS.map((cls) => (
-              <option key={cls} value={cls === 'All Classes' ? '' : cls}>
+              <option key={cls} value={cls === "All Classes" ? "" : cls}>
                 {cls}
               </option>
             ))}
@@ -301,9 +311,12 @@ export const Tuitions = () => {
             <Filter className="w-7 h-7" />
           </div>
           <div className="space-y-1">
-            <h3 className="font-extrabold text-lg text-base-content">No Tuitions Matched</h3>
+            <h3 className="font-extrabold text-lg text-base-content">
+              No Tuitions Matched
+            </h3>
             <p className="text-xs text-base-content/60 max-w-md mx-auto">
-              We couldn't find any approved tuition postings matching your search, subject, class, or location filters.
+              We couldn't find any approved tuition postings matching your
+              search, subject, class, or location filters.
             </p>
           </div>
           <div className="pt-2">
@@ -336,13 +349,18 @@ export const Tuitions = () => {
                       </h3>
                     </div>
                     <div className="text-right shrink-0">
-                      <span className="text-[10px] text-base-content/50 block">Budget</span>
-                      <span className="font-black text-primary text-lg">${t.budget}/mo</span>
+                      <span className="text-[10px] text-base-content/50 block">
+                        Budget
+                      </span>
+                      <span className="font-black text-primary text-lg">
+                        ${t.budget}/mo
+                      </span>
                     </div>
                   </div>
 
                   <p className="text-xs text-base-content/70 line-clamp-2 leading-relaxed">
-                    {t.description || 'Student seeking an experienced tutor for comprehensive subject mentorship.'}
+                    {t.description ||
+                      "Student seeking an experienced tutor for comprehensive subject mentorship."}
                   </p>
 
                   <div className="space-y-2 pt-2 border-t border-base-200 text-xs text-base-content/70">
@@ -352,7 +370,7 @@ export const Tuitions = () => {
                     </div>
                     <div className="flex items-center gap-2">
                       <Calendar className="w-3.5 h-3.5 text-secondary shrink-0" />
-                      <span>{t.schedule || '3 Days/Week'}</span>
+                      <span>{t.schedule || "3 Days/Week"}</span>
                     </div>
                   </div>
                 </div>
@@ -377,8 +395,9 @@ export const Tuitions = () => {
           {totalPages > 1 && (
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 pt-6 border-t border-base-200">
               <div className="text-xs text-base-content/60">
-                Page <strong className="text-base-content">{page}</strong> of{' '}
-                <strong className="text-base-content">{totalPages}</strong> ({totalCount} total tuitions)
+                Page <strong className="text-base-content">{page}</strong> of{" "}
+                <strong className="text-base-content">{totalPages}</strong> (
+                {totalCount} total tuitions)
               </div>
 
               <div className="flex items-center gap-1.5">
@@ -401,8 +420,8 @@ export const Tuitions = () => {
                       disabled={isFetching}
                       className={`btn btn-sm btn-square rounded-xl text-xs font-bold transition-all ${
                         page === num
-                          ? 'btn-primary text-primary-content shadow-sm'
-                          : 'btn-ghost text-base-content/70 hover:bg-base-200'
+                          ? "btn-primary text-primary-content shadow-sm"
+                          : "btn-ghost text-base-content/70 hover:bg-base-200"
                       }`}
                     >
                       {num}
@@ -413,7 +432,9 @@ export const Tuitions = () => {
                 {/* Next Button */}
                 <button
                   disabled={page >= totalPages || isFetching}
-                  onClick={() => setPage((prev) => Math.min(totalPages, prev + 1))}
+                  onClick={() =>
+                    setPage((prev) => Math.min(totalPages, prev + 1))
+                  }
                   className="btn btn-outline btn-sm rounded-xl text-xs gap-1"
                 >
                   <span>Next</span>

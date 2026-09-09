@@ -1,9 +1,9 @@
-import { useEffect } from 'react';
-import axios from 'axios';
-import { useAuth } from './useAuth';
+import { useEffect } from "react";
+import axios from "axios";
+import { useAuth } from "./useAuth";
 
 const axiosSecure = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:3000',
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
 });
 
 export const useAxiosSecure = () => {
@@ -19,7 +19,7 @@ export const useAxiosSecure = () => {
         }
         return config;
       },
-      (error) => Promise.reject(error)
+      (error) => Promise.reject(error),
     );
 
     // 2. Response Interceptor: Catch 401 & 403 Forbidden errors
@@ -31,7 +31,7 @@ export const useAxiosSecure = () => {
           console.warn(`Unauthorized access detected (${status}).`);
         }
         return Promise.reject(error);
-      }
+      },
     );
 
     return () => {

@@ -12,13 +12,14 @@ import {
 } from '../firebase/firebase.config';
 import { AuthContext } from './AuthContext';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+// ডিফল্ট ব্যাকএন্ড পোর্ট 5000
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000';
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper function to sync/save user to MongoDB backend with default role 'student'
+  // Helper: MongoDB ব্যাকএন্ডে ইউজার সিঙ্ক করা (সার্ভার অফ থাকলেও ক্র্যাশ করবে না)
   const saveUserToDatabase = async (firebaseUser, customRole = 'student', customPhone = '') => {
     if (!firebaseUser?.email) return null;
     try {
@@ -38,12 +39,12 @@ export const AuthProvider = ({ children }) => {
       });
       return response.data;
     } catch (error) {
-      console.warn('MongoDB user sync warning:', error.response?.data?.message || error.message);
+      // ব্যাকএন্ড অফ থাকলেও ফ্রন্টএন্ড যাতে আটকে না যায়
       return null;
     }
   };
 
-  // 1. Email/Password Registration (Creates Firebase account & default student in MongoDB)
+  // ১. Email/Password রেজিস্ট্রেশন
   const createUser = async (email, password, displayName = '', role = 'student', phone = '') => {
     setLoading(true);
     try {
@@ -51,7 +52,7 @@ export const AuthProvider = ({ children }) => {
       if (displayName) {
         await updateProfile(result.user, { displayName });
       }
-      // Sync to backend MongoDB with specified or default 'student' role
+      // MongoDB ব্যাকএন্ডে রোল ও ফোন সহ সেভ
       await saveUserToDatabase(result.user, role, phone);
       return result;
     } finally {
@@ -59,18 +60,17 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 2. Email/Password Login
+  // ২. Email/Password লগইন
   const signIn = (email, password) => {
     setLoading(true);
     return signInWithEmailAndPassword(auth, email, password);
   };
 
-  // 3. Google Sign In (Automatically ensures MongoDB user exists)
+  // ৩. Google Sign In
   const signInWithGoogle = async () => {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      // Auto sync user to MongoDB (defaults to student if new)
       await saveUserToDatabase(result.user, 'student');
       return result;
     } finally {
@@ -78,7 +78,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // 4. Update Profile Display Name & Avatar
+  // ৪. প্রোফাইল আপডেট
   const updateUserProfile = (name, photo) => {
     return updateProfile(auth.currentUser, {
       displayName: name,
@@ -86,25 +86,24 @@ export const AuthProvider = ({ children }) => {
     });
   };
 
-  // 5. Sign Out
+  // ৫. লগআউট
   const logOut = () => {
     setLoading(true);
     return signOut(auth);
   };
 
-  // 6. Helper to retrieve fresh Firebase ID token
+  // ৬. Firebase ID Token নেওয়া
   const getToken = async (forceRefresh = false) => {
     if (!auth.currentUser) return null;
     return await auth.currentUser.getIdToken(forceRefresh);
   };
 
-  // 7. Firebase Auth State Observer
+  // ৭. Auth State পরিবর্তন ট্র্যাকিং
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (currentUser) => {
       setUser(currentUser);
 
       if (currentUser?.email) {
-        // Sync user info with backend
         await saveUserToDatabase(currentUser);
       }
 
@@ -116,7 +115,7 @@ export const AuthProvider = ({ children }) => {
 
   const authInfo = {
     user,
-    currentUser: user, // exposed as requested
+    currentUser: user,
     loading,
     setLoading,
     createUser,
@@ -134,3 +133,5 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
+
+export default AuthProvider;
