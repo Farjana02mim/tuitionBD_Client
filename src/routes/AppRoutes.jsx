@@ -4,7 +4,7 @@ import { DashboardLayout } from '../layouts/DashboardLayout';
 
 // Public Pages
 import { Home } from '../pages/Home';
-import { Tuitions } from '../pages/Tuitions';
+import Tuitions from '../pages/Tuitions';
 import { TuitionDetails } from '../pages/TuitionDetails';
 import { Tutors } from '../pages/Tutors';
 import { TutorProfile } from '../pages/TutorProfile';

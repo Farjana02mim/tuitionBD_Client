@@ -1,19 +1,43 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { useAuth } from '../../../hooks/useAuth';
 import { useRole } from '../../../hooks/useRole';
 import { useAxiosSecure } from '../../../hooks/useAxiosSecure';
 import Swal from 'sweetalert2';
-import { User, Mail, Phone, Image, Save, ShieldCheck } from 'lucide-react';
+import { User, Mail, Phone, Image, Save } from 'lucide-react';
+import { LoadingSpinner } from '../../../components/Shared/LoadingSpinner';
 
 export const ProfileSettings = () => {
   const { user, updateUserProfile } = useAuth();
   const [role] = useRole();
   const axiosSecure = useAxiosSecure();
+  const queryClient = useQueryClient();
 
   const [displayName, setDisplayName] = useState(user?.displayName || '');
   const [photoURL, setPhotoURL] = useState(user?.photoURL || '');
   const [phone, setPhone] = useState('');
   const [isUpdating, setIsUpdating] = useState(false);
+
+  // ডাটাবেজ থেকে স্টুডেন্ট প্রোফাইল ডেটা ফেচ
+  const { data: dbUser, isLoading } = useQuery({
+    queryKey: ['userProfile', user?.email],
+    enabled: !!user?.email,
+    queryFn: async () => {
+      const res = await axiosSecure.get('/user/profile');
+      return res.data?.user || null;
+    },
+  });
+
+  useEffect(() => {
+    if (dbUser) {
+      if (dbUser.name) setDisplayName(dbUser.name);
+      if (dbUser.photoURL) setPhotoURL(dbUser.photoURL);
+      if (dbUser.phone) setPhone(dbUser.phone);
+    } else if (user) {
+      if (user.displayName) setDisplayName(user.displayName);
+      if (user.photoURL) setPhotoURL(user.photoURL);
+    }
+  }, [dbUser, user]);
 
   const handleUpdate = async (e) => {
     e.preventDefault();
@@ -29,6 +53,8 @@ export const ProfileSettings = () => {
         photoURL,
       });
 
+      queryClient.invalidateQueries({ queryKey: ['userProfile', user?.email] });
+
       Swal.fire({
         icon: 'success',
         title: 'Profile Updated',
@@ -41,12 +67,16 @@ export const ProfileSettings = () => {
       Swal.fire({
         icon: 'error',
         title: 'Update Failed',
-        text: error.message,
+        text: error.response?.data?.message || error.message,
       });
     } finally {
       setIsUpdating(false);
     }
   };
+
+  if (isLoading) {
+    return <LoadingSpinner text="Loading profile settings..." />;
+  }
 
   return (
     <div className="max-w-2xl mx-auto space-y-6">
@@ -167,3 +197,4 @@ export const ProfileSettings = () => {
     </div>
   );
 };
+export default ProfileSettings;

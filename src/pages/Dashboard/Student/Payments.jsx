@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useAxiosSecure } from '../../../hooks/useAxiosSecure';
-import { CreditCard, DollarSign, Calendar, CheckCircle2, ShieldCheck } from 'lucide-react';
+import { CreditCard, DollarSign, ShieldCheck } from 'lucide-react';
 import { LoadingSpinner } from '../../../components/Shared/LoadingSpinner';
 
 export const Payments = () => {
@@ -110,3 +110,4 @@ export const Payments = () => {
     </div>
   );
 };
+export default Payments;

@@ -10,9 +10,6 @@ import {
   CheckCircle2,
   GraduationCap,
   Briefcase,
-  DollarSign,
-  Filter,
-  ArrowRight,
 } from 'lucide-react';
 import { LoadingSpinner } from '../../../components/Shared/LoadingSpinner';
 
@@ -25,7 +22,7 @@ export const AppliedTutors = () => {
 
   const [selectedTuitionId, setSelectedTuitionId] = useState(tuitionIdParam);
 
-  // 1. Fetch student's tuitions for dropdown filter
+  // ১. ড্রপডাউন ফিল্টারের জন্য স্টুডেন্টের সকল টিউশন পোস্ট
   const { data: myTuitions } = useQuery({
     queryKey: ['myTuitionsFilterList'],
     queryFn: async () => {
@@ -34,7 +31,7 @@ export const AppliedTutors = () => {
     },
   });
 
-  // 2. Fetch applications
+  // ২. আবেদনকারী টিউটরদের তালিকা ফেচ করা
   const { data: applicationsData, isLoading } = useQuery({
     queryKey: ['studentAppliedTutors', selectedTuitionId],
     queryFn: async () => {
@@ -42,19 +39,17 @@ export const AppliedTutors = () => {
         const res = await axiosSecure.get(`/tuitions/${selectedTuitionId}/applications`);
         return res.data?.applications || [];
       }
-      // If no specific tuition selected, fetch for all student tuitions or general endpoint
       const res = await axiosSecure.get('/my-tuitions');
       const allTuitions = res.data?.data || [];
       const appPromises = allTuitions.map((t) =>
         axiosSecure.get(`/tuitions/${t._id}/applications`).catch(() => ({ data: { applications: [] } }))
       );
       const results = await Promise.all(appPromises);
-      const flatApps = results.flatMap((r) => r.data?.applications || []);
-      return flatApps;
+      return results.flatMap((r) => r.data?.applications || []);
     },
   });
 
-  // 3. Reject mutation
+  // ৩. আবেদন রিজেক্ট মিউটেশন
   const rejectMutation = useMutation({
     mutationFn: async ({ applicationId, rejectionReason }) => {
       return await axiosSecure.patch(`/applications/${applicationId}/reject`, { rejectionReason });
@@ -96,7 +91,7 @@ export const AppliedTutors = () => {
     });
   };
 
-  // 4. Accept & Pay via Stripe Checkout
+  // ৪. Stripe Checkout এর মাধ্যমে Accept & Pay
   const handleAccept = async (appId, tutorName) => {
     try {
       Swal.fire({
@@ -185,9 +180,14 @@ export const AppliedTutors = () => {
                   <div className="avatar">
                     <div className="w-12 h-12 rounded-2xl border border-base-200 overflow-hidden">
                       <img
-                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          app.tutorName || 'Tutor'
-                        )}&background=0284c7&color=fff`}
+                        src={
+                          app.tutorPhoto ||
+                          app.tutorProfile?.photoURL ||
+                          app.photoURL ||
+                          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            app.tutorName || 'Tutor'
+                          )}&background=0284c7&color=fff`
+                        }
                         alt={app.tutorName}
                         className="w-full h-full object-cover"
                       />
@@ -270,3 +270,4 @@ export const AppliedTutors = () => {
     </div>
   );
 };
+export default AppliedTutors;

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useSearchParams, Link } from 'react-router-dom';
 import { useAxiosSecure } from '../../../hooks/useAxiosSecure';
-import { CheckCircle, AlertCircle, ArrowRight, BookOpen } from 'lucide-react';
+import { CheckCircle, AlertCircle, ArrowRight } from 'lucide-react';
 import { LoadingSpinner } from '../../../components/Shared/LoadingSpinner';
 
 export const PaymentSuccess = () => {
@@ -9,7 +9,7 @@ export const PaymentSuccess = () => {
   const sessionId = searchParams.get('session_id');
   const axiosSecure = useAxiosSecure();
 
-  const [status, setStatus] = useState('verifying'); // verifying, success, error
+  const [status, setStatus] = useState('verifying');
   const [data, setData] = useState(null);
   const [errorMessage, setErrorMessage] = useState('');
 
@@ -108,3 +108,4 @@ export const PaymentSuccess = () => {
     </div>
   );
 };
+export default PaymentSuccess;

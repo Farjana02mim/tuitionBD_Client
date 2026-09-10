@@ -14,91 +14,38 @@ import {
   CreditCard,
   Star,
 } from "lucide-react";
+import { safeDateString } from "../utils/formatters";
 import { LoadingSpinner } from "../components/Shared/LoadingSpinner";
-import HowItWorks from "../components/HowItWorks";
+import { HowItWorks } from "../components/HowItWorks";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
 export const Home = () => {
   // 1. Dynamic Latest Approved Tuitions
-  const { data: tuitionsData, isLoading: isTuitionsLoading } = useQuery({
+  const { data: tuitionsData = [], isLoading: isTuitionsLoading } = useQuery({
     queryKey: ["latestTuitions"],
     queryFn: async () => {
-      const res = await axios.get(
-        `${API_URL}/tuitions?limit=6&sortBy=createdAt&sortOrder=desc`,
-      );
-      return res.data?.data || [];
+      const res = await axios.get(`${API_URL}/tuitions?limit=6&sort=newest`);
+      return res.data?.data || res.data?.tuitions || [];
     },
   });
 
-  // 2. Dynamic Latest Verified Tutors
-  const { data: tutorsData, isLoading: isTutorsLoading } = useQuery({
+  // 2. Dynamic Latest Verified Tutors (Real Data from Backend)
+  const { data: tutorsData = [], isLoading: isTutorsLoading } = useQuery({
     queryKey: ["latestTutors"],
     queryFn: async () => {
       const res = await axios.get(`${API_URL}/users?role=tutor&limit=4`);
-      return res.data?.data || [];
+      return res.data?.data || res.data?.users || [];
     },
   });
-
-  const latestTuitions = tuitionsData || [];
-  const latestTutors =
-    tutorsData && tutorsData.length > 0
-      ? tutorsData
-      : [
-          {
-            _id: "sample-1",
-            name: "Dr. Sarah Jenkins",
-            email: "sarah.jenkins@mit.edu",
-            phone: "+1 (555) 234-5678",
-            role: "tutor",
-            photoURL:
-              "https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80",
-            qualifications: "Ph.D. in Applied Mathematics, MIT",
-            experience: "7+ Years Experience in Calculus & Physics",
-          },
-          {
-            _id: "sample-2",
-            name: "Prof. Marcus Vance",
-            email: "marcus.vance@stanford.edu",
-            phone: "+1 (555) 876-5432",
-            role: "tutor",
-            photoURL:
-              "https://images.unsplash.com/photo-1560250097-0b93528c311a?w=400&auto=format&fit=crop&q=80",
-            qualifications: "M.Sc. in Organic Chemistry, Stanford",
-            experience: "5+ Years Tutoring AP Chemistry & Biology",
-          },
-          {
-            _id: "sample-3",
-            name: "Elena Rostova",
-            email: "elena.rostova@oxford.ac.uk",
-            phone: "+1 (555) 345-6789",
-            role: "tutor",
-            photoURL:
-              "https://images.unsplash.com/photo-1580489944761-15a19d654956?w=400&auto=format&fit=crop&q=80",
-            qualifications: "M.A. in English Literature & Linguistics",
-            experience: "6+ Years IELTS, SAT & Creative Writing",
-          },
-          {
-            _id: "sample-4",
-            name: "David Chen",
-            email: "david.chen@berkeley.edu",
-            phone: "+1 (555) 901-2345",
-            role: "tutor",
-            photoURL:
-              "https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80",
-            qualifications: "B.S. in Computer Science, UC Berkeley",
-            experience: "4+ Years Python, Algorithms & Data Prep",
-          },
-        ];
 
   return (
     <div className="space-y-24 pb-20">
       {/* ============================================================ */}
-      {/* 1. HERO SECTION WITH FRAMER MOTION ANIMATIONS 1 & 2 */}
+      {/* 1. HERO SECTION */}
       {/* ============================================================ */}
       <section className="relative overflow-hidden bg-gradient-to-b from-primary/10 via-base-100 to-base-100 py-20 px-4 md:px-8 border-b border-base-200">
         <div className="max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
-          {/* ANIMATION 1: Left Hero Content Fade-Up Entrance */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
@@ -165,7 +112,7 @@ export const Home = () => {
             </div>
           </motion.div>
 
-          {/* ANIMATION 2: Right Interactive Card Scale-in & Hover Elevation */}
+          {/* Interactive Hero Card */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -252,97 +199,12 @@ export const Home = () => {
       </section>
 
       {/* ============================================================ */}
-      {/* 2. HOW THE PLATFORM WORKS (ANIMATION 3: Staggered Cards) */}
+      {/* 2. HOW THE PLATFORM WORKS */}
       {/* ============================================================ */}
-      <section className="max-w-7xl mx-auto px-4 md:px-8 space-y-12">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="text-center space-y-3 max-w-2xl mx-auto"
-        >
-          <div className="badge badge-primary badge-outline text-xs font-bold uppercase tracking-wider">
-            Simple 3-Step Process
-          </div>
-          <h2 className="text-3xl font-extrabold text-base-content tracking-tight">
-            How TuitionDesk Works
-          </h2>
-          <p className="text-xs text-base-content/60">
-            A frictionless workflow ensuring transparent hiring, verified
-            educators, and secure milestone payments.
-          </p>
-        </motion.div>
-
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-          {/* Step 1 */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -6 }}
-            transition={{ duration: 0.4, delay: 0.1 }}
-            className="card bg-base-100 border border-base-200 p-8 rounded-3xl space-y-4 text-center hover:border-primary/50 transition-colors shadow-sm cursor-pointer"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-primary/10 text-primary flex items-center justify-center mx-auto text-xl font-black">
-              1
-            </div>
-            <h3 className="font-extrabold text-lg text-base-content">
-              Post Tuition Requirement
-            </h3>
-            <p className="text-xs text-base-content/70 leading-relaxed">
-              Students and parents post their subject, class grade, monthly
-              budget, preferred days, and target goals in under 2 minutes.
-            </p>
-          </motion.div>
-
-          {/* Step 2 */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -6 }}
-            transition={{ duration: 0.4, delay: 0.2 }}
-            className="card bg-base-100 border border-base-200 p-8 rounded-3xl space-y-4 text-center hover:border-primary/50 transition-colors shadow-sm cursor-pointer"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-secondary/10 text-secondary flex items-center justify-center mx-auto text-xl font-black">
-              2
-            </div>
-            <h3 className="font-extrabold text-lg text-base-content">
-              Review Tutor Applications
-            </h3>
-            <p className="text-xs text-base-content/70 leading-relaxed">
-              Certified tutors apply with their university degrees, teaching
-              records, and salary proposals. Filter and choose the best
-              candidate.
-            </p>
-          </motion.div>
-
-          {/* Step 3 */}
-          <motion.div
-            initial={{ opacity: 0, y: 25 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            whileHover={{ y: -6 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-            className="card bg-base-100 border border-base-200 p-8 rounded-3xl space-y-4 text-center hover:border-primary/50 transition-colors shadow-sm cursor-pointer"
-          >
-            <div className="w-14 h-14 rounded-2xl bg-accent/10 text-accent flex items-center justify-center mx-auto text-xl font-black">
-              3
-            </div>
-            <h3 className="font-extrabold text-lg text-base-content">
-              Hire with Secure Stripe Escrow
-            </h3>
-            <p className="text-xs text-base-content/70 leading-relaxed">
-              Confirm the tutor hire via encrypted Stripe payment. Funds are
-              securely locked in escrow until teaching sessions are active.
-            </p>
-          </motion.div>
-        </div>
-      </section>
+      <HowItWorks />
 
       {/* ============================================================ */}
-      {/* 3. DYNAMIC LATEST TUITION POSTS (ANIMATION 4: Scroll Fade-In Cards) */}
+      {/* 3. DYNAMIC LATEST TUITION POSTS */}
       {/* ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-4">
@@ -365,7 +227,7 @@ export const Home = () => {
 
         {isTuitionsLoading ? (
           <LoadingSpinner text="Loading recent tuitions..." />
-        ) : latestTuitions.length === 0 ? (
+        ) : tuitionsData.length === 0 ? (
           <div className="card bg-base-100 border border-base-200 p-12 text-center rounded-3xl">
             <p className="text-xs text-base-content/60">
               No tuitions posted yet. Be the first to post!
@@ -373,7 +235,7 @@ export const Home = () => {
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {latestTuitions.map((t, index) => (
+            {tuitionsData.map((t, index) => (
               <motion.div
                 key={t._id}
                 initial={{ opacity: 0, y: 20 }}
@@ -422,7 +284,7 @@ export const Home = () => {
 
                 <div className="pt-4 border-t border-base-200 flex items-center justify-between">
                   <span className="text-[11px] text-base-content/50">
-                    {new Date(t.createdAt).toLocaleDateString()}
+                    {safeDateString(t.createdAt, t)}
                   </span>
                   <Link
                     to={`/tuitions/${t._id}`}
@@ -439,7 +301,7 @@ export const Home = () => {
       </section>
 
       {/* ============================================================ */}
-      {/* 4. DYNAMIC LATEST VERIFIED TUTORS (ANIMATION 5: Scale-in on scroll) */}
+      {/* 4. DYNAMIC LATEST VERIFIED TUTORS */}
       {/* ============================================================ */}
       <section className="max-w-7xl mx-auto px-4 md:px-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-base-200 pb-4">
@@ -462,9 +324,15 @@ export const Home = () => {
 
         {isTutorsLoading ? (
           <LoadingSpinner text="Fetching verified tutors..." />
+        ) : tutorsData.length === 0 ? (
+          <div className="card bg-base-100 border border-base-200 p-12 text-center rounded-3xl">
+            <p className="text-xs text-base-content/60">
+              No verified tutors registered yet.
+            </p>
+          </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {latestTutors.map((tutor, index) => (
+            {tutorsData.map((tutor, index) => (
               <motion.div
                 key={tutor._id}
                 initial={{ opacity: 0, scale: 0.95 }}
@@ -532,15 +400,10 @@ export const Home = () => {
         )}
       </section>
 
-      {/*============================================================ */}
-      {/* 4. HOW THE PLATFORM WORKS (3-STEP VISUAL GRID) */}
-      {/* ============================================================ */}
-      <HowItWorks />
-
       {/* ============================================================ */}
       {/* 5. WHY CHOOSE US SECTION */}
       {/* ============================================================ */}
-      <section className="bg-base-200/50 py-16 px-4 md:px-8 border-y border-base-200">
+      <section className="py-16 px-4 md:px-8 border-y border-base-200">
         <div className="max-w-7xl mx-auto space-y-12">
           <motion.div
             initial={{ opacity: 0, y: 20 }}

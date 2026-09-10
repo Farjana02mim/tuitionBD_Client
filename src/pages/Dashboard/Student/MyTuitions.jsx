@@ -10,7 +10,6 @@ import {
   Edit3,
   MapPin,
   DollarSign,
-  Calendar,
   BookOpen,
   X,
   Save,
@@ -216,7 +215,7 @@ export const MyTuitions = () => {
 
               <div className="pt-4 border-t border-base-200 flex items-center justify-between gap-2">
                 <Link
-                  to={`/dashboard/student/applied-tutors?tuitionId=${t._id}`}
+                  to={`/dashboard/student/tuitions/${t._id}/applications`}
                   className="btn btn-primary btn-outline btn-sm rounded-xl font-bold text-xs gap-1.5"
                 >
                   <Users className="w-3.5 h-3.5" />
@@ -368,3 +367,4 @@ export const MyTuitions = () => {
     </div>
   );
 };
+export default MyTuitions;

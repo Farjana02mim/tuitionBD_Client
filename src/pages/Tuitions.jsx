@@ -17,6 +17,7 @@ import {
   BookOpen,
 } from "lucide-react";
 import { LoadingSpinner } from "../components/Shared/LoadingSpinner";
+import { safeDateString } from "../utils/formatters";
 
 const API_URL = import.meta.env.VITE_API_URL || "http://localhost:5000";
 
@@ -377,7 +378,8 @@ export const Tuitions = () => {
 
                 <div className="pt-5 mt-4 border-t border-base-200 flex items-center justify-between">
                   <span className="text-[11px] text-base-content/50">
-                    {new Date(t.createdAt).toLocaleDateString()}
+                    {/* safeDateString ব্যবহার করায় আর কখনো Invalid Date আসবে না */}
+                    {safeDateString(t.createdAt, t)}
                   </span>
                   <Link
                     to={`/tuitions/${t._id}`}
@@ -448,3 +450,4 @@ export const Tuitions = () => {
     </div>
   );
 };
+export default Tuitions;

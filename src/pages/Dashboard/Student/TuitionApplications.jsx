@@ -8,7 +8,6 @@ import {
   XCircle,
   CheckCircle2,
   ArrowLeft,
-  DollarSign,
   GraduationCap,
   Briefcase,
 } from 'lucide-react';
@@ -68,7 +67,7 @@ export const TuitionApplications = () => {
     });
   };
 
-  const handleAcceptAndPay = async (appId, tutorName, salary) => {
+  const handleAcceptAndPay = async (appId, tutorName) => {
     try {
       Swal.fire({
         title: 'Preparing Secure Checkout',
@@ -84,7 +83,6 @@ export const TuitionApplications = () => {
       });
 
       if (res.data?.url) {
-        // Redirect to Stripe Checkout
         window.location.href = res.data.url;
       } else {
         throw new Error('Could not obtain checkout session URL');
@@ -149,12 +147,18 @@ export const TuitionApplications = () => {
               <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
                   <div className="avatar">
-                    <div className="w-12 rounded-2xl border border-base-200">
+                    <div className="w-12 h-12 rounded-2xl border border-base-200 overflow-hidden">
                       <img
-                        src={`https://ui-avatars.com/api/?name=${encodeURIComponent(
-                          app.tutorName || 'Tutor'
-                        )}&background=0284c7&color=fff`}
-                        alt="Tutor Avatar"
+                        src={
+                          app.tutorPhoto ||
+                          app.tutorProfile?.photoURL ||
+                          app.photoURL ||
+                          `https://ui-avatars.com/api/?name=${encodeURIComponent(
+                            app.tutorName || 'Tutor'
+                          )}&background=0284c7&color=fff`
+                        }
+                        alt={app.tutorName || 'Tutor Avatar'}
+                        className="w-full h-full object-cover"
                       />
                     </div>
                   </div>
@@ -201,7 +205,7 @@ export const TuitionApplications = () => {
                 </div>
               </div>
 
-              {/* Action Buttons */}
+              {/* অ্যাকশন বাটনসমূহ */}
               {app.status === 'pending' && tuition?.status !== 'assigned' && (
                 <div className="flex items-center justify-end gap-3 pt-2">
                   <button
@@ -213,7 +217,7 @@ export const TuitionApplications = () => {
                   </button>
 
                   <button
-                    onClick={() => handleAcceptAndPay(app._id, app.tutorName, app.expectedSalary)}
+                    onClick={() => handleAcceptAndPay(app._id, app.tutorName)}
                     className="btn btn-primary btn-sm rounded-xl font-bold gap-2 text-xs shadow-md shadow-primary/20"
                   >
                     <CreditCard className="w-4 h-4" />
@@ -235,3 +239,4 @@ export const TuitionApplications = () => {
     </div>
   );
 };
+export default TuitionApplications;

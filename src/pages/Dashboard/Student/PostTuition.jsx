@@ -31,7 +31,6 @@ export const PostTuition = () => {
 
     setIsSubmitting(true);
     try {
-      // নিশ্চিতভাবে ফ্রেশ টোকেন নেওয়া
       const token = await user?.getIdToken();
 
       const payload = {
@@ -184,14 +183,15 @@ export const PostTuition = () => {
             <label className="label">
               <span className="label-text font-bold text-xs flex items-center gap-1.5">
                 <FileText className="w-3.5 h-3.5 text-primary" />
-                <span className='pr-6'>Description</span>
+                <span>Description / Details</span>
               </span>
+              <span className="label-text-alt text-[10px] text-base-content/50">Optional</span>
             </label>
             <textarea
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Enter tuition description (e.g. Needs help with calculus and mechanics; student prepares for exams; requires female/male tutor with experience)..."
+              placeholder="Enter tuition description (e.g. Needs help with calculus and mechanics; student prepares for exams)..."
               className="textarea textarea-bordered text-xs rounded-2xl focus:textarea-primary"
             ></textarea>
           </div>
@@ -215,5 +215,4 @@ export const PostTuition = () => {
     </div>
   );
 };
-
 export default PostTuition;

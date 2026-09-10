@@ -10,8 +10,6 @@ import {
   Users,
   CreditCard,
   ArrowRight,
-  TrendingUp,
-  AlertCircle,
 } from 'lucide-react';
 import { LoadingSpinner } from '../../../components/Shared/LoadingSpinner';
 
@@ -19,7 +17,6 @@ export const StudentDashboard = () => {
   const { user } = useAuth();
   const axiosSecure = useAxiosSecure();
 
-  // Fetch student's tuitions
   const { data: tuitions, isLoading: isTuitionsLoading } = useQuery({
     queryKey: ['myTuitionsSummary'],
     queryFn: async () => {
@@ -28,7 +25,6 @@ export const StudentDashboard = () => {
     },
   });
 
-  // Fetch payments made
   const { data: payments, isLoading: isPaymentsLoading } = useQuery({
     queryKey: ['studentPaymentsSummary'],
     queryFn: async () => {
@@ -80,7 +76,7 @@ export const StudentDashboard = () => {
         </div>
       </div>
 
-      {/* KPI Cards */}
+      {/* KPI Metrics */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className="card bg-base-100 border border-base-200 p-5 rounded-3xl space-y-2 shadow-sm">
           <div className="flex items-center justify-between">
@@ -213,3 +209,4 @@ export const StudentDashboard = () => {
     </div>
   );
 };
+export default StudentDashboard;
