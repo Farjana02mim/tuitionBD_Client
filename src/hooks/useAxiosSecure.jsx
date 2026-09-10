@@ -1,44 +1,44 @@
-import { useEffect } from "react";
 import axios from "axios";
-import { useAuth } from "./useAuth";
+import { auth } from "../firebase/firebase.config";
 
+// সরাসরি এক্সিওস ইন্সট্যান্স তৈরি
 const axiosSecure = axios.create({
   baseURL: import.meta.env.VITE_API_URL || "http://localhost:5000",
 });
 
-export const useAxiosSecure = () => {
-  const { user, logOut } = useAuth();
-
-  useEffect(() => {
-    // 1. Request Interceptor: Attach Firebase Bearer Token
-    const requestInterceptor = axiosSecure.interceptors.request.use(
-      async (config) => {
-        if (user) {
-          const token = await user.getIdToken();
+// ইন্টারসেপ্টর সরাসরি ইন্সট্যান্সে রেজিস্টার করা (যাতে কোনো পেজে টোকেন মিস না হয়)
+axiosSecure.interceptors.request.use(
+  async (config) => {
+    try {
+      const currentUser = auth.currentUser;
+      if (currentUser) {
+        const token = await currentUser.getIdToken(false);
+        if (token) {
           config.headers.Authorization = `Bearer ${token}`;
         }
-        return config;
-      },
-      (error) => Promise.reject(error),
-    );
+      }
+    } catch (err) {
+      console.error("Error attaching auth token:", err);
+    }
+    return config;
+  },
+  (error) => Promise.reject(error)
+);
 
-    // 2. Response Interceptor: Catch 401 & 403 Forbidden errors
-    const responseInterceptor = axiosSecure.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const status = error.response?.status;
-        if (status === 401 || status === 403) {
-          console.warn(`Unauthorized access detected (${status}).`);
-        }
-        return Promise.reject(error);
-      },
-    );
+// রেসপন্স ইন্টারসেপ্টর: 401 বা 403 এরর লগ করা
+axiosSecure.interceptors.response.use(
+  (response) => response,
+  async (error) => {
+    const status = error.response?.status;
+    if (status === 401 || status === 403) {
+      console.warn(`[AxiosSecure] Unauthorized / Forbidden: ${status}`, error.response?.data);
+    }
+    return Promise.reject(error);
+  }
+);
 
-    return () => {
-      axiosSecure.interceptors.request.eject(requestInterceptor);
-      axiosSecure.interceptors.response.eject(responseInterceptor);
-    };
-  }, [user, logOut]);
-
+export const useAxiosSecure = () => {
   return axiosSecure;
 };
+
+export default useAxiosSecure;

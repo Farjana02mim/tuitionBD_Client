@@ -1,10 +1,12 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../hooks/useAuth';
 import { useAxiosSecure } from '../../../hooks/useAxiosSecure';
 import Swal from 'sweetalert2';
-import { PlusCircle, BookOpen, MapPin, DollarSign, Calendar, FileText, Send } from 'lucide-react';
+import { BookOpen, MapPin, DollarSign, Calendar, FileText, Send } from 'lucide-react';
 
 export const PostTuition = () => {
+  const { user } = useAuth();
   const [subject, setSubject] = useState('');
   const [studentClass, setStudentClass] = useState('');
   const [location, setLocation] = useState('');
@@ -18,41 +20,55 @@ export const PostTuition = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!subject || !studentClass || !location || !budget) {
+    if (!subject.trim() || !studentClass.trim() || !location.trim() || !budget) {
       Swal.fire({
         icon: 'warning',
         title: 'Missing Required Fields',
-        text: 'Please fill in all mandatory fields.',
+        text: 'Please fill in Subject, Class, Location, and Budget.',
       });
       return;
     }
 
     setIsSubmitting(true);
     try {
-      await axiosSecure.post('/tuitions', {
-        subject,
-        class: studentClass,
-        location,
+      // নিশ্চিতভাবে ফ্রেশ টোকেন নেওয়া
+      const token = await user?.getIdToken();
+
+      const payload = {
+        subject: subject.trim(),
+        class: studentClass.trim(),
+        location: location.trim(),
         budget: Number(budget),
-        schedule,
-        description,
+        schedule: (schedule || 'Flexible').trim(),
+        description: (description || '').trim(),
+      };
+
+      const res = await axiosSecure.post('/tuitions', payload, {
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
       });
 
-      Swal.fire({
-        icon: 'success',
-        title: 'Tuition Posted!',
-        text: 'Your requirement was submitted and is pending admin approval.',
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      if (res.data?.success || res.status === 201 || res.status === 200) {
+        Swal.fire({
+          icon: 'success',
+          title: 'Tuition Posted!',
+          text: 'Your tuition requirement was successfully saved to the database.',
+          timer: 2000,
+          showConfirmButton: false,
+        });
 
-      navigate('/dashboard/student/my-tuitions');
+        navigate('/dashboard/student/my-tuitions');
+      }
     } catch (error) {
       console.error('Post tuition error:', error);
+      const errorMsg =
+        error.response?.data?.message ||
+        error.message ||
+        'Failed to save tuition to database.';
+
       Swal.fire({
         icon: 'error',
         title: 'Submission Failed',
-        text: error.response?.data?.message || error.message,
+        text: errorMsg,
       });
     } finally {
       setIsSubmitting(false);
@@ -119,7 +135,7 @@ export const PostTuition = () => {
                   required
                   value={location}
                   onChange={(e) => setLocation(e.target.value)}
-                  placeholder="e.g. Online (Zoom) / Downtown San Francisco"
+                  placeholder="e.g. Online (Zoom) / Dhanmondi, Dhaka"
                   className="input input-bordered input-sm w-full pl-10 text-xs rounded-xl"
                 />
               </div>
@@ -127,7 +143,7 @@ export const PostTuition = () => {
 
             <div className="form-control">
               <label className="label">
-                <span className="label-text font-bold text-xs">Monthly Budget ($ USD) *</span>
+                <span className="label-text font-bold text-xs">Monthly Budget (BDT / USD) *</span>
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-base-content/40">
@@ -136,9 +152,10 @@ export const PostTuition = () => {
                 <input
                   type="number"
                   required
+                  min="1"
                   value={budget}
                   onChange={(e) => setBudget(e.target.value)}
-                  placeholder="e.g. 300"
+                  placeholder="e.g. 5000"
                   className="input input-bordered input-sm w-full pl-10 text-xs rounded-xl"
                 />
               </div>
@@ -157,7 +174,7 @@ export const PostTuition = () => {
                 type="text"
                 value={schedule}
                 onChange={(e) => setSchedule(e.target.value)}
-                placeholder="e.g. 3 Days/Week (Mon, Wed, Fri after 5 PM)"
+                placeholder="e.g. 3 Days/Week (Sun, Tue, Thu after 6 PM)"
                 className="input input-bordered input-sm w-full pl-10 text-xs rounded-xl"
               />
             </div>
@@ -165,14 +182,17 @@ export const PostTuition = () => {
 
           <div className="form-control">
             <label className="label">
-              <span className="label-text font-bold text-xs">Detailed Requirements / Goals</span>
+              <span className="label-text font-bold text-xs flex items-center gap-1.5">
+                <FileText className="w-3.5 h-3.5 text-primary" />
+                <span className='pr-6'>Description</span>
+              </span>
             </label>
             <textarea
               rows={4}
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Describe learning goals, specific textbooks, exam targets, or tutor preferences..."
-              className="textarea textarea-bordered text-xs rounded-2xl"
+              placeholder="Enter tuition description (e.g. Needs help with calculus and mechanics; student prepares for exams; requires female/male tutor with experience)..."
+              className="textarea textarea-bordered text-xs rounded-2xl focus:textarea-primary"
             ></textarea>
           </div>
 
@@ -187,7 +207,7 @@ export const PostTuition = () => {
               ) : (
                 <Send className="w-4 h-4" />
               )}
-              <span>Submit Tuition Post</span>
+              <span>{isSubmitting ? 'Posting to Database...' : 'Submit Tuition Post'}</span>
             </button>
           </div>
         </form>
@@ -195,3 +215,5 @@ export const PostTuition = () => {
     </div>
   );
 };
+
+export default PostTuition;
