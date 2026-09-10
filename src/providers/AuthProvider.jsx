@@ -19,18 +19,22 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Helper: MongoDB ব্যাকএন্ডে ইউজার সিঙ্ক করা (সার্ভার অফ থাকলেও ক্র্যাশ করবে না)
-  const saveUserToDatabase = async (firebaseUser, customRole = 'student', customPhone = '') => {
+  // Helper: MongoDB ব্যাকএন্ডে ইউজার সিঙ্ক করা (রোল ও photoURL সুরক্ষিত থাকবে)
+  const saveUserToDatabase = async (firebaseUser, customRole = null, customPhone = '', customPhoto = '') => {
     if (!firebaseUser?.email) return null;
     try {
       const token = await firebaseUser.getIdToken();
       const payload = {
         name: firebaseUser.displayName || 'Anonymous User',
         email: firebaseUser.email,
-        photoURL: firebaseUser.photoURL || '',
-        role: customRole || 'student',
+        photoURL: customPhoto || firebaseUser.photoURL || '',
         phone: customPhone || '',
       };
+
+      // শুধুমাত্র রেজিস্ট্রেশনের সময় রোল পাঠানো হবে
+      if (customRole) {
+        payload.role = customRole;
+      }
 
       const response = await axios.post(`${API_URL}/users`, payload, {
         headers: {
@@ -39,21 +43,27 @@ export const AuthProvider = ({ children }) => {
       });
       return response.data;
     } catch (error) {
-      // ব্যাকএন্ড অফ থাকলেও ফ্রন্টএন্ড যাতে আটকে না যায়
+      console.warn('MongoDB user sync notice:', error.response?.data?.message || error.message);
       return null;
     }
   };
 
-  // ১. Email/Password রেজিস্ট্রেশন
-  const createUser = async (email, password, displayName = '', role = 'student', phone = '') => {
+  // ১. Email/Password রেজিস্ট্রেশন (নাম, রোল, ফোন এবং Photo URL সহ)
+  const createUser = async (email, password, displayName = '', role = 'student', phone = '', photoURL = '') => {
     setLoading(true);
     try {
       const result = await createUserWithEmailAndPassword(auth, email, password);
-      if (displayName) {
-        await updateProfile(result.user, { displayName });
+      
+      // Firebase প্রোফাইলে নাম ও ছবি সেট করা
+      if (displayName || photoURL) {
+        await updateProfile(result.user, {
+          displayName: displayName || result.user.displayName,
+          photoURL: photoURL || '',
+        });
       }
-      // MongoDB ব্যাকএন্ডে রোল ও ফোন সহ সেভ
-      await saveUserToDatabase(result.user, role, phone);
+
+      // MongoDB ব্যাকএন্ডে নাম, রোল, ফোন ও ছবি সহ সেভ করা
+      await saveUserToDatabase(result.user, role, phone, photoURL);
       return result;
     } finally {
       setLoading(false);
@@ -71,7 +81,7 @@ export const AuthProvider = ({ children }) => {
     setLoading(true);
     try {
       const result = await signInWithPopup(auth, googleProvider);
-      await saveUserToDatabase(result.user, 'student');
+      await saveUserToDatabase(result.user, null);
       return result;
     } finally {
       setLoading(false);
@@ -79,11 +89,14 @@ export const AuthProvider = ({ children }) => {
   };
 
   // ৪. প্রোফাইল আপডেট
-  const updateUserProfile = (name, photo) => {
-    return updateProfile(auth.currentUser, {
+  const updateUserProfile = async (name, photo) => {
+    if (!auth.currentUser) return;
+    await updateProfile(auth.currentUser, {
       displayName: name,
       photoURL: photo,
     });
+    // প্রোফাইল আপডেটের সাথে সাথে MongoDB-তেও আপডেট সিঙ্ক হবে
+    await saveUserToDatabase(auth.currentUser, null, '', photo);
   };
 
   // ৫. লগআউট
@@ -104,7 +117,8 @@ export const AuthProvider = ({ children }) => {
       setUser(currentUser);
 
       if (currentUser?.email) {
-        await saveUserToDatabase(currentUser);
+        // রোল ওভাররাইট না করে বর্তমান ডাটা সিঙ্ক হবে
+        await saveUserToDatabase(currentUser, null);
       }
 
       setLoading(false);
